@@ -6,6 +6,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Injectable } from '@nestjs/common';
+import * as dotenv from 'dotenv';
 import fs from 'fs';
 import puppeteer from 'puppeteer';
 import { PuppeteerScreenRecorder } from 'puppeteer-screen-recorder';
@@ -13,7 +14,7 @@ import { v4 } from 'uuid';
 import { GenerateScreenShotDto } from './dto/generate-ss.dto';
 import { BUCKET_NAME, expirationTimeInSec } from './utils/constant';
 import { pageScrollScript } from './utils/pageScroll';
-import * as dotenv from 'dotenv';
+
 dotenv.config();
 
 const s3 = new S3Client({
