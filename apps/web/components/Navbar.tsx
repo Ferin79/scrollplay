@@ -2,16 +2,23 @@ import Link from "next/link";
 import React, { useContext } from "react";
 import { BsFillMoonFill, BsFillSunFill } from "react-icons/bs";
 import { Context, ContextType } from "../data/context";
+import Logo from "./Logo";
 
 const Navbar = () => {
   const { setIsDarkMode, isDarkMode } = useContext(Context) as ContextType;
   return (
     <header
       className={`w-screen px-4 lg:px-16 h-[10vh] flex items-center justify-between transition-all duration-300 ease-in-out border-b ${
-        isDarkMode && "bg-black"
+        isDarkMode ? "bg-gray-900" : "bg-primaryBg"
       }`}
     >
-      <Link href="/" className="cursor-pointer p-3">
+      <Link
+        href="/"
+        className="cursor-pointer p-3 flex justify-center items-center"
+      >
+        <div className="h-full w-20">
+          <Logo />
+        </div>
         <span className="uppercase text-xl lg:text-2xl tracking-wider md:tracking-[10px] font-bold text-scroll">
           scroll
         </span>

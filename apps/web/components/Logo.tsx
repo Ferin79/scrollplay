@@ -1,4 +1,5 @@
 import React from "react";
+import { Tween } from "react-gsap";
 
 const Logo = () => {
   return (
@@ -9,32 +10,57 @@ const Logo = () => {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <g filter="url(#filter0_d_2_2)">
-        <path
-          d="M43.0005 115.095V53.4361C43.0004 37.9202 63.0008 38.4581 63.0008 53.4361V115.095C63.0008 128.302 43.0005 128.302 43.0005 115.095Z"
-          fill="#E36363"
-          fillOpacity="0.12"
-        />
+      {/* This is scroll path */}
+      <path
+        d="M43.0005 115.095V53.4361C43.0004 37.9202 63.0008 38.4581 63.0008 53.4361V115.095C63.0008 128.302 43.0005 128.302 43.0005 115.095Z"
+        fill="#E36363"
+        fillOpacity="0.12"
+      />
+      {/* This is scroll border */}
+      <Tween
+        from={{
+          svgDraw: 0,
+        }}
+        to={{
+          svgDraw: 1,
+        }}
+        duration={2}
+      >
         <path
           d="M10 126.808V47.5545C10 -2.84921 97.0014 -2.18601 97.0014 47.5545V126.808C97.0014 173.232 10 174.227 10 126.808Z"
           stroke="#D98888"
-          strokeWidth="2"
-        />
-        <g filter="url(#filter1_b_2_2)">
-          <ellipse
-            cx="53.0007"
-            cy="55.5"
-            rx="7.00011"
-            ry="7.5"
-            fill="#E36363"
-          />
-        </g>
-        <path
-          d="M194.766 71.0941C206.388 77.6606 206.254 94.4464 194.529 100.827L138.46 131.34C127.08 137.533 113.232 129.228 113.335 116.272L113.827 54.3594C113.93 41.4034 127.909 33.3202 139.189 39.6937L194.766 71.0941Z"
-          stroke="#B6E9C5"
           strokeWidth="4"
         />
-      </g>
+      </Tween>
+      {/* This is scroll button */}
+      <Tween
+        to={{ cy: "115" }}
+        delay={2}
+        duration={2.5}
+        yoyo={true}
+        repeat={-1}
+        ease="none"
+      >
+        <ellipse cx="53.0007" cy="55.5" rx="7.00011" ry="7.5" fill="#E36363" />
+      </Tween>
+      {/* This is play button */}
+
+      <Tween
+        from={{
+          svgDraw: 0,
+        }}
+        to={{
+          svgDraw: 1,
+        }}
+        duration={2}
+        delay={2}
+      >
+        <path
+          d="M194.766 71.0941C206.388 77.6606 206.254 94.4464 194.529 100.827L138.46 131.34C127.08 137.533 113.232 129.228 113.335 116.272L113.827 54.3594C113.93 41.4034 127.909 33.3202 139.189 39.6937L194.766 71.0941Z"
+          stroke="#3fcbb2"
+          strokeWidth="4"
+        />
+      </Tween>
       {/* <defs>
         <filter
           id="filter0_d_2_2"

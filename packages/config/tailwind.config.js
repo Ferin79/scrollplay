@@ -1,3 +1,6 @@
+const { fontFamily } = require('tailwindcss/defaultTheme')
+const defaultTheme = require('tailwindcss/defaultTheme')
+
 module.exports = {
     content: [
         "./pages/**/*.{js,ts,jsx,tsx}",
@@ -6,10 +9,17 @@ module.exports = {
     theme: {
         extend: {
             colors: {
-                primaryBg: "#e3dbe3",
+                primaryBg: "#fdf8f0",
                 scroll: "#E36363",
-                play: "#68d989"
-            }
+                play: "#3fcbb2"
+            },
+            fontFamily: {
+                primary: ['Josefin Sans', ...fontFamily.sans]
+            },
+            screens: {
+                'xs': '475px',
+                ...defaultTheme.screens,
+            },
         },
     },
     plugins: [],
