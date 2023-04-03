@@ -39,9 +39,7 @@ export class AppService {
     let page: Page | null = null;
     let recorder: PuppeteerScreenRecorder | null = null;
     try {
-      browser = await puppeteer.launch({
-        headless: false,
-      });
+      browser = await puppeteer.launch();
       page = await browser.newPage();
       await page.goto(generateSSDto.url);
       await page.waitForTimeout(generateSSDto.pageLoadsIn * 1000);
