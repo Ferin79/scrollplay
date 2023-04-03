@@ -11,10 +11,10 @@ import { useRouter } from "next/router";
 
 const formValidation = yup.object({
   url: yup.string().required().url(),
-  width: yup.number().default(1920).min(300).max(1920),
-  height: yup.number().default(1080).min(500).max(1080),
-  duration: yup.number().default(5).min(3).max(15),
-  pageLoadsIn: yup.number().default(5).min(1).max(10),
+  width: yup.number().required().min(300).max(1920),
+  height: yup.number().required().min(500).max(1080),
+  duration: yup.number().required().min(3).max(15),
+  pageLoadsIn: yup.number().required().min(1).max(10),
 });
 
 const container: Variants = {
@@ -63,10 +63,10 @@ export default function Index() {
   const formik = useFormik({
     initialValues: {
       url: "",
-      width: "",
-      height: "",
-      duration: "",
-      pageLoadsIn: "",
+      width: 1920,
+      height: 1080,
+      duration: 5,
+      pageLoadsIn: 5,
     },
     isInitialValid: false,
     validationSchema: formValidation,

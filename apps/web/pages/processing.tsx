@@ -1,11 +1,11 @@
-import React, { useContext, useEffect, useState } from "react";
-import Logo from "../components/Logo";
-import { LoadingTextArr } from "../constant";
-import { Variants, motion } from "framer-motion";
-import { Context, ContextType } from "../data/context";
-import { useRouter } from "next/router";
 import axios from "axios";
+import { Variants, motion } from "framer-motion";
+import { useRouter } from "next/router";
+import { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import Logo from "../components/Logo";
+import { LoadingTextArr, SERVER_URL } from "../constant";
+import { Context, ContextType } from "../data/context";
 
 const variants = {
   show: {
@@ -63,7 +63,7 @@ const Processing = () => {
       router.replace("/");
     }
     axios
-      .post("/generate-screenshot", { ...router.query })
+      .post(`${SERVER_URL}/generate-screenshot`, { ...router.query })
       .then((response) => {
         toast("Process completed");
         router.push({

@@ -5,10 +5,10 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import * as dotenv from 'dotenv';
 import fs from 'fs';
-import puppeteer from 'puppeteer';
+import puppeteer, { Browser, Page } from 'puppeteer';
 import { PuppeteerScreenRecorder } from 'puppeteer-screen-recorder';
 import { v4 } from 'uuid';
 import { GenerateScreenShotDto } from './dto/generate-ss.dto';
@@ -35,51 +35,77 @@ export class AppService {
 
   async generateScreenshot(generateSSDto: GenerateScreenShotDto) {
     const id = v4();
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    await page.goto(generateSSDto.url);
-    await page.waitForTimeout(generateSSDto.pageLoadsIn * 1000);
-    await page.setViewport({
-      width: generateSSDto.width,
-      height: generateSSDto.height,
-    });
-    const recorder = new PuppeteerScreenRecorder(page, {
-      videoFrame: {
+    let browser: Browser | null = null;
+    let page: Page | null = null;
+    let recorder: PuppeteerScreenRecorder | null = null;
+    try {
+      browser = await puppeteer.launch({
+        headless: false,
+      });
+      page = await browser.newPage();
+      await page.goto(generateSSDto.url);
+      await page.waitForTimeout(generateSSDto.pageLoadsIn * 1000);
+      await page.setViewport({
         width: generateSSDto.width,
         height: generateSSDto.height,
-      },
-    });
-    await recorder.start(`${id}.mp4`);
-    await page.addScriptTag({
-      content: pageScrollScript(generateSSDto.duration * 1000),
-    });
-    await page.waitForSelector('#scrollplay-complete', {
-      timeout: (generateSSDto.duration + 1) * 1000,
-    });
-    // await page.waitForTimeout(generateSSDto.duration * 1000);
-    await recorder.stop();
-    await browser.close();
+      });
+      recorder = new PuppeteerScreenRecorder(page, {
+        videoFrame: {
+          width: generateSSDto.width,
+          height: generateSSDto.height,
+        },
+      });
+      await recorder.start(`${id}.mp4`);
+      await page.addScriptTag({
+        content: pageScrollScript(generateSSDto.duration * 1000),
+      });
 
-    const videoFile = fs.readFileSync(`${id}.mp4`);
+      // await page.waitForTimeout(generateSSDto.duration * 1000);
+    } catch (error: any) {
+      return new InternalServerErrorException(error.message);
+    }
 
-    const params: PutObjectCommandInput = {
-      Bucket: BUCKET_NAME,
-      Key: `${id}.mp4`,
-      Body: videoFile,
-      Tagging: 'autoDelete=true',
-    };
+    try {
+      await page.waitForSelector('#scrollplay-complete', {
+        timeout: generateSSDto.duration * 1000,
+      });
+    } catch (error: any) {
+      console.log('Error Finding #scrollplay-complete');
+      console.log(error.message);
+    }
 
-    const command = new PutObjectCommand(params);
-    await s3.send(command);
-    const getCommand = new GetObjectCommand(params);
-    const url = await getSignedUrl(s3, getCommand, {
-      expiresIn: expirationTimeInSec,
-    });
-    fs.unlinkSync(`${id}.mp4`);
+    try {
+      await recorder.stop();
+      await browser.close();
+    } catch (error: any) {
+      return new InternalServerErrorException(error.message);
+    }
 
-    return {
-      message: 'success',
-      url,
-    };
+    try {
+      const videoFile = fs.readFileSync(`${id}.mp4`);
+
+      const params: PutObjectCommandInput = {
+        Bucket: BUCKET_NAME,
+        Key: `${id}.mp4`,
+        Body: videoFile,
+        Tagging: 'autoDelete=true',
+      };
+
+      const command = new PutObjectCommand(params);
+      await s3.send(command);
+      const getCommand = new GetObjectCommand(params);
+      const url = await getSignedUrl(s3, getCommand, {
+        expiresIn: expirationTimeInSec,
+      });
+      fs.unlinkSync(`${id}.mp4`);
+
+      return {
+        message: 'success',
+        url,
+      };
+    } catch (error: any) {
+      fs.unlinkSync(`${id}.mp4`);
+      return new InternalServerErrorException(error.message);
+    }
   }
 }
