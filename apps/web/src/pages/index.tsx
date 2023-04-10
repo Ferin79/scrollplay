@@ -7,7 +7,7 @@ import * as yup from "yup";
 import { Variants, motion } from "framer-motion";
 import clsx from "clsx";
 import { Context, ContextType } from "../data/context";
-import { useRouter } from "next/router";
+import { useNavigate } from "react-router-dom";
 
 const formValidation = yup.object({
   url: yup.string().required().url(),
@@ -36,7 +36,7 @@ const listItem: Variants = {
 
 export default function Index() {
   const { isDarkMode } = useContext(Context) as ContextType;
-  const router = useRouter();
+  const navigate = useNavigate();
 
   const formFieldClassNames = clsx(
     "text-md lg:text-lg capitalize font-normal  tracking-[0.69px] leading-8",
@@ -72,9 +72,10 @@ export default function Index() {
     validationSchema: formValidation,
     onSubmit: (values, action) => {
       action.setSubmitting(true);
-      router.push({
-        pathname: "/processing",
-        query: { ...values },
+      navigate("/processing", {
+        state: {
+          data: { ...values },
+        },
       });
       action.resetForm();
       action.setSubmitting(false);

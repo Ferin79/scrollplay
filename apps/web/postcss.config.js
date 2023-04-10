@@ -1,1 +1,2 @@
-module.exports = require("config/postcss.config");
+import config from "config/postcss.config.js";
+export default config;

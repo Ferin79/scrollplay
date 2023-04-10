@@ -1,9 +1,9 @@
-import { useRouter } from "next/router";
 import React, { useContext } from "react";
 import { Context, ContextType } from "../data/context";
+import { useLocation } from "react-router-dom";
 
 const Result = () => {
-  const router = useRouter();
+  const location = useLocation();
   const { isDarkMode } = useContext(Context) as ContextType;
 
   return (
@@ -17,11 +17,11 @@ const Result = () => {
         height="720"
         controls
         autoPlay
-        src={(router.query.url as string) || ""}
+        src={(location.state.data.url as string) || ""}
       />
 
       <a
-        href={(router.query.url as string) || ""}
+        href={(location.state.data.query.url as string) || ""}
         download
         className="mt-10 py-3 px-5 bg-play rounded-2xl text-white"
       >

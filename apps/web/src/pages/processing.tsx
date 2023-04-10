@@ -1,11 +1,11 @@
 import axios from "axios";
 import { Variants, motion } from "framer-motion";
-import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Logo from "../components/Logo";
 import { LoadingTextArr, SERVER_URL } from "../constant";
 import { Context, ContextType } from "../data/context";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const variants = {
   show: {
@@ -54,41 +54,62 @@ const getRandomText = () => {
 };
 
 const Processing = () => {
-  const router = useRouter();
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const [text, setText] = useState(LoadingTextArr[0]);
   const { isDarkMode } = useContext(Context) as ContextType;
+  const [requestFailed, setRequestFailed] = useState(false);
 
   useEffect(() => {
-    if (router.query.url === undefined) {
-      router.replace("/");
+    console.log(location.state.data);
+    if (!location.state || !location.state.data) {
+      navigate("/");
     }
     axios
-      .post(`${SERVER_URL}/generate-screenshot`, { ...router.query })
+      .post(`${SERVER_URL}/generate-screenshot`, { ...location.state.data })
       .then((response) => {
         toast("Process completed");
-        router.push({
-          pathname: "/result",
-          query: response.data,
+        navigate("/result", {
+          state: {
+            data: response.data,
+          },
         });
       })
       .catch((error) => {
         toast.error(error.message);
-        setTimeout(() => {
-          router.replace("/");
-        }, 3000);
+        setRequestFailed(true);
       });
-  }, [router]);
+  }, [location.state, navigate]);
 
   useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
     const interval = setTimeout(() => {
       setText(getRandomText());
     }, 10000);
 
     return () => clearInterval(interval);
   }, [text]);
+
+  if (requestFailed) {
+    return (
+      <div
+        className={`w-full h-[90vh] flex justify-center items-center ${
+          isDarkMode ? "bg-gray-900" : "bg-primaryBg"
+        }`}
+      >
+        <div className="w-[80%] lg:w-1/3 h-full flex flex-col justify-center items-center">
+          <h1
+            className={`text-5xl lg:text-6xl font-bold ${
+              isDarkMode ? "text-white" : "text-black"
+            }`}
+          >
+            Something went wrong
+          </h1>
+          <h2 className="text-3xl text-scroll mt-10">Try again later.</h2>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div

@@ -1,6 +1,6 @@
-import Link from "next/link";
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { BsFillMoonFill, BsFillSunFill } from "react-icons/bs";
+import { Link } from "react-router-dom";
 import { Context, ContextType } from "../data/context";
 import Logo from "./Logo";
 
@@ -13,7 +13,7 @@ const Navbar = () => {
       }`}
     >
       <Link
-        href="/"
+        to="/"
         className="cursor-pointer p-3 flex justify-center items-center"
       >
         <div className="h-full w-20">
