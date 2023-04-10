@@ -12,7 +12,7 @@
     "module": "ESNext",
     "resolveJsonModule": true,
     "noEmit": true,
-    "jsx": "react-jsx"
-  },
-  "files": []
+    "jsx": "react-jsx",
+    "noImplicitAny": false
+  }
 }
